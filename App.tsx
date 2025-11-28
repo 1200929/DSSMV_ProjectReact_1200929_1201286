@@ -5,8 +5,8 @@
  * @format
  */
 
-import { NewAppScreen } from '@react-native/new-app-screen';
-import { StatusBar, StyleSheet, useColorScheme, View } from 'react-native';
+import  { NewAppScreen } from '@react-native/new-app-screen';
+import {StatusBar, StyleSheet, TextInput, useColorScheme, View} from 'react-native';
 import {
   SafeAreaProvider,
   useSafeAreaInsets,
@@ -28,6 +28,16 @@ function AppContent() {
 
   return (
     <View style={styles.container}>
+        <TextInput
+            placeholder="Type here to translate!"
+            defaultValue="default"
+            style={{
+                height: 40,
+                padding: 5,
+                marginHorizontal: 8,
+                borderWidth: 1,
+            }}
+        />
       <NewAppScreen
         templateFileName="App.tsx"
         safeAreaInsets={safeAreaInsets}
