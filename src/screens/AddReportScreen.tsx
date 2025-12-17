@@ -11,23 +11,22 @@ import {
   PermissionsAndroid,
   Platform
 } from 'react-native';
+
 import { useDispatch } from 'react-redux';
 import { addReport } from '../store/slices/reportsSlice';
-// Biblioteca GPS
 import Geolocation from 'react-native-geolocation-service';
 
 export const AddReportScreen = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
 
-  // Estados do GPS
   const [location, setLocation] = useState<{latitude: number; longitude: number} | null>(null);
   const [loadingLocation, setLoadingLocation] = useState(false);
   const [gpsError, setGpsError] = useState<string | null>(null);
 
-  const dispatch = useDispatch();
 
-  // Função Auxiliar: Pedir Permissão ao Android
+  const dispatch = useDispatch<any>();
+
   const requestLocationPermission = async () => {
     if (Platform.OS === 'android') {
       try {
@@ -35,7 +34,7 @@ export const AddReportScreen = () => {
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
             title: "Permissão de GPS Necessária",
-            message: "Esta aplicação precisa de acesso ao GPS para registar a localização da ocorrência.",
+            message: "Esta aplicação precisa de acesso ao GPS.",
             buttonNeutral: "Perguntar Depois",
             buttonNegative: "Cancelar",
             buttonPositive: "OK"
@@ -50,12 +49,10 @@ export const AddReportScreen = () => {
     return true;
   };
 
-  // Função Principal: Obter a Localização
   const getLocation = useCallback(async () => {
     setLoadingLocation(true);
     setGpsError(null);
 
-    // Pedir permissão
     const hasPermission = await requestLocationPermission();
 
     if (!hasPermission) {
@@ -64,10 +61,8 @@ export const AddReportScreen = () => {
       return;
     }
 
-    // Obter coordenadas
     Geolocation.getCurrentPosition(
       (position) => {
-        console.log("GPS Sucesso:", position);
         setLocation({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude
@@ -75,51 +70,51 @@ export const AddReportScreen = () => {
         setLoadingLocation(false);
       },
       (error) => {
-        console.log("GPS Erro:", error);
-        setGpsError(`Erro ao obter GPS (Cód: ${error.code})`);
+        setGpsError(`Erro GPS: ${error.code}`);
         setLoadingLocation(false);
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
     );
   }, []);
 
-  // Ciclo de Vida: Ao abrir o ecrã
   useEffect(() => {
     getLocation();
   }, [getLocation]);
 
-  // Função de Guardar
   const handleSave = () => {
     if (!title.trim() || !description.trim()) {
-      Alert.alert("Campos em falta", "Por favor preencha o título e a descrição.");
+      Alert.alert("Erro", "Preencha o título e a descrição.");
       return;
     }
 
     if (!location) {
-      Alert.alert("A aguardar GPS", "É necessário aguardar pela localização GPS.");
+      Alert.alert("A aguardar GPS", "É necessário aguardar pela localização.");
       return;
     }
 
     dispatch(addReport({
-      id: Date.now().toString(),
+      id: '',
       title,
       description,
       timestamp: new Date().toISOString(),
       latitude: location.latitude,
       longitude: location.longitude
-    }));
-
-    Alert.alert("Sucesso", "Ocorrência registada!");
-    setTitle('');
-    setDescription('');
-    Keyboard.dismiss();
+    })).unwrap()
+      .then(() => {
+        Alert.alert("Sucesso", "Ocorrência guardada na Cloud!");
+        setTitle('');
+        setDescription('');
+        Keyboard.dismiss();
+      })
+      .catch((error: any) => {
+        Alert.alert("Erro", "Falha ao enviar: " + error.message);
+      });
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.headerTitle}>Nova Ocorrência</Text>
 
-      {/* --- Painel de Status do GPS --- */}
       <TouchableOpacity style={styles.gpsContainer} onPress={getLocation} activeOpacity={0.7}>
         {loadingLocation ? (
           <View style={styles.row}>
@@ -127,13 +122,12 @@ export const AddReportScreen = () => {
             <Text style={styles.gpsText}>A procurar sinal GPS...</Text>
           </View>
         ) : gpsError ? (
-          <Text style={[styles.gpsText, styles.errorText]}>⚠️ {gpsError}{'\n'}(Toque aqui para tentar novamente)</Text>
+          <Text style={[styles.gpsText, styles.errorText]}>{gpsError}</Text>
         ) : location ? (
           <View>
             <Text style={styles.gpsLabel}>Localização Detetada:</Text>
             <Text style={[styles.gpsText, styles.successText]}>
-              Lat: {location.latitude.toFixed(5)}{'\n'}
-              Long: {location.longitude.toFixed(5)}
+              Lat: {location.latitude.toFixed(5)}, Long: {location.longitude.toFixed(5)}
             </Text>
           </View>
         ) : (
@@ -141,19 +135,18 @@ export const AddReportScreen = () => {
         )}
       </TouchableOpacity>
 
-      {/* --- Formulário --- */}
       <Text style={styles.label}>Título</Text>
       <TextInput style={styles.input} placeholder="Ex: Buraco na via" value={title} onChangeText={setTitle} />
 
       <Text style={styles.label}>Descrição</Text>
-      <TextInput style={[styles.input, styles.textArea]} placeholder="Detalhes da ocorrência..." value={description} onChangeText={setDescription} multiline textAlignVertical="top" />
+      <TextInput style={[styles.input, styles.textArea]} placeholder="Detalhes..." value={description} onChangeText={setDescription} multiline textAlignVertical="top" />
 
       <TouchableOpacity
         style={[styles.btn, (!location) && styles.btnDisabled]}
         onPress={handleSave}
         disabled={!location}
       >
-        <Text style={styles.btnText}>Guardar Relatório</Text>
+        <Text style={styles.btnText}>Guardar na Cloud</Text>
       </TouchableOpacity>
     </View>
   );
