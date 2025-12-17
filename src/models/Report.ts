@@ -1,8 +1,23 @@
+
+import { WeatherData } from './Weather';
+
+export type ReportStatus = 'RESOLVIDO' | 'EM RESOLUÇÃO';
+
 export interface Report {
-  id: string;
+  _id?: string;
+  id?: string;
+
   title: string;
   description: string;
-  timestamp: string;
+
   latitude: number;
   longitude: number;
+
+  address?: string;
+  area?: string;
+
+  weather?: WeatherData;
+
+  timestamp: string;
+  state: ReportStatus;
 }
