@@ -1,14 +1,19 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  ScrollView,
+  Image,
+} from 'react-native';
 import { Report } from '../models/Report';
 
-// Define o tipo das props de navegação (opcional mas bom para TypeScript)
 interface ReportDetailsProps {
   route: { params: { report: Report } };
   navigation: any;
 }
 
-export const ReportDetailsScreen = ({ route, navigation }: ReportDetailsProps) => {
+export const ReportDetailsScreen = ({ route }: ReportDetailsProps) => {
   // Recebemos o report enviado pelo ecrã anterior
   const { report } = route.params;
 
@@ -17,10 +22,14 @@ export const ReportDetailsScreen = ({ route, navigation }: ReportDetailsProps) =
 
   return (
     <ScrollView style={styles.container}>
-
       {/* CABEÇALHO */}
       <View style={styles.header}>
-        <View style={[styles.badge, report.state === 'RESOLVIDO' ? styles.badgeGreen : styles.badgeRed]}>
+        <View
+          style={[
+            styles.badge,
+            report.state === 'RESOLVIDO' ? styles.badgeGreen : styles.badgeRed,
+          ]}
+        >
           <Text style={styles.badgeText}>{report.state}</Text>
         </View>
         <Text style={styles.date}>{formattedDate}</Text>
@@ -42,7 +51,9 @@ export const ReportDetailsScreen = ({ route, navigation }: ReportDetailsProps) =
         <View style={styles.row}>
           <Text style={styles.icon}></Text>
           <View>
-            <Text style={styles.bodyText}>{report.address || "Sem morada"}</Text>
+            <Text style={styles.bodyText}>
+              {report.address || 'Sem morada'}
+            </Text>
             <Text style={styles.subText}>
               {report.area ? `${report.area} • ` : ''}
               {report.latitude.toFixed(5)}, {report.longitude.toFixed(5)}
@@ -58,19 +69,28 @@ export const ReportDetailsScreen = ({ route, navigation }: ReportDetailsProps) =
           <View style={styles.weatherBox}>
             <Text style={styles.weatherTemp}>{report.weather.temp}</Text>
             <View>
-              <Text style={styles.weatherDesc}>{report.weather.description}</Text>
+              <Text style={styles.weatherDesc}>
+                {report.weather.description}
+              </Text>
               <Text style={styles.subText}>Vento: {report.weather.wind}</Text>
             </View>
           </View>
         </View>
       )}
 
-      {/* BOTÃO VOLTAR (Opcional, pois o Android tem botão físico e o iOS tem a seta no topo) */}
-      <TouchableOpacity style={styles.btnBack} onPress={() => navigation.goBack()}>
-        <Text style={styles.btnBackText}>Voltar à Lista</Text>
-      </TouchableOpacity>
+      {/* FOTOGRAFIA */}
+      {report.photoBase64 && (
+        <View style={styles.section}>
+          <Text style={styles.label}>FOTOGRAFIA</Text>
+          <Image
+            source={{ uri: report.photoBase64 }}
+            style={styles.photo}
+            resizeMode="cover"
+          />
+        </View>
+      )}
 
-      <View style={{height: 40}} />
+      <View style={{ height: 40 }} />
     </ScrollView>
   );
 };
@@ -105,5 +125,15 @@ const styles = StyleSheet.create({
   weatherDesc: { fontSize: 16, color: '#333', textTransform: 'capitalize' },
 
   btnBack: { marginTop: 20, padding: 15, alignItems: 'center', backgroundColor: '#f0f0f0', borderRadius: 8 },
-  btnBackText: { color: '#555', fontWeight: '600' }
+  btnBackText: { color: '#555', fontWeight: '600' },
+
+  // ESTILO DA FOTO
+  photo: {
+    width: '100%',
+    height: 250,
+    borderRadius: 12,
+    backgroundColor: '#eee',
+    borderWidth: 1,
+    borderColor: '#ddd'
+  }
 });

@@ -10,13 +10,15 @@ import {
   ActivityIndicator,
   PermissionsAndroid,
   Platform,
-  ScrollView
+  ScrollView,
+  Image,
 } from 'react-native';
 
 import { WeatherData } from '../models/Weather';
 import { useDispatch } from 'react-redux';
 import { addReport } from '../store/slices/reportsSlice';
 import Geolocation from 'react-native-geolocation-service';
+import * as ImagePicker from 'react-native-image-picker';
 
 // CONSTANTES DAS APIS
 const API_KEY = '51ca6243f7msh9902b1a86759ef4p18db50jsn69065123cb41';
@@ -27,6 +29,11 @@ export const AddReportScreen = ({ navigation }: any) => {
   // ESTADOS DO FORMULÁRIO
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+
+  // ESTADOS FOTO
+  const [photoUri, setPhotoUri] = useState<string | null>(null); // Para o preview local
+  const [photoData, setPhotoData] = useState<string | null>(null); // O Base64 para enviar
+  const [loadingPhoto, setLoadingPhoto] = useState(false);
 
   // ESTADOS DE DADOS EXTERNOS
   const [location, setLocation] = useState<{latitude: number; longitude: number} | null>(null);
@@ -164,7 +171,71 @@ export const AddReportScreen = ({ navigation }: any) => {
   };
 
 
-  // GUARDAR REPORT
+  // ADICIONAR FOTO
+  const handleSelectPhoto = () => {
+    Alert.alert(
+      "Adicionar Fotografia",
+      "Escolha uma opção:",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { text: "Tirar Foto", onPress: takePhoto },
+        { text: "Escolher da Galeria", onPress: chooseFromLibrary }
+      ]
+    );
+  };
+
+  // Configurações da foto
+  const pickerOptions: ImagePicker.ImageLibraryOptions & ImagePicker.CameraOptions = {
+    mediaType: 'photo',
+    quality: 0.7, // [0, 1]
+    maxWidth: 640,
+    maxHeight: 480,
+    includeBase64: true,
+  };
+
+  // Callback para processar o resultado da imagem
+  const processImageResult = (response: ImagePicker.ImagePickerResponse) => {
+    setLoadingPhoto(true);
+    if (response.didCancel) {
+      console.log('Utilizador cancelou');
+    } else if (response.errorMessage) {
+      Alert.alert("Erro", response.errorMessage);
+    } else if (response.assets && response.assets.length > 0) {
+      const asset = response.assets[0];
+
+      // Guarda a URI local para o preview
+      setPhotoUri(asset.uri || null);
+
+      // Guardar Base64
+      if (asset.base64 && asset.type) {
+        setPhotoData(`data:${asset.type};base64,${asset.base64}`);
+      } else {
+        Alert.alert("Erro", "Não foi possível obter os dados da imagem.");
+        setPhotoUri(null);
+        setPhotoData(null);
+      }
+    }
+    setLoadingPhoto(false);
+  };
+
+  // Lógica para a Câmara
+  const takePhoto = () => {
+    ImagePicker.launchCamera(pickerOptions, processImageResult);
+  };
+
+  // Lógica para a Galeria
+  const chooseFromLibrary = () => {
+    ImagePicker.launchImageLibrary(pickerOptions, processImageResult);
+  };
+
+  // Remover foto selecionada
+  const removePhoto = () => {
+    setPhotoUri(null);
+    setPhotoData(null);
+  }
+
+
+// GUARDAR REPORT (Atualizado com a foto)
   const handleSave = () => {
     if (!title.trim() || !description.trim() || !location) {
       Alert.alert("Erro", "Preencha Título, Descrição e aguarde o GPS.");
@@ -179,7 +250,10 @@ export const AddReportScreen = ({ navigation }: any) => {
       longitude: location.longitude,
       address: addressInfo?.address,
       area: addressInfo?.area,
-      weather: weatherInfo || undefined
+      weather: weatherInfo || undefined,
+
+      // ENVIAR DADOS DA FOTO
+      photoBase64: photoData || undefined
     })).unwrap()
       .then(() => {
         // Limpar formulário
@@ -187,8 +261,11 @@ export const AddReportScreen = ({ navigation }: any) => {
         setDescription('');
         setAddressInfo(null);
         setWeatherInfo(null);
-        Keyboard.dismiss();
 
+        // LIMPAR FOTO
+        removePhoto();
+
+        Keyboard.dismiss();
 
         Alert.alert(
           "Sucesso",
@@ -227,6 +304,27 @@ export const AddReportScreen = ({ navigation }: any) => {
           <Text style={styles.gpsText}>Toque para ativar GPS</Text>
         )}
       </TouchableOpacity>
+
+      {/* --- SECÇÃO DA FOTOGRAFIA (NOVO) --- */}
+      <Text style={styles.label}>Fotografia</Text>
+      <View style={styles.photoSection}>
+        {photoUri ? (
+          <View style={styles.photoContainer}>
+            <Image source={{ uri: photoUri }} style={styles.photoPreview} />
+            <TouchableOpacity style={styles.btnRemovePhoto} onPress={removePhoto}>
+              <Text style={styles.btnRemovePhotoText}>✕</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          <TouchableOpacity style={styles.photoPlaceholder} onPress={handleSelectPhoto} disabled={loadingPhoto}>
+            {loadingPhoto ? (
+              <ActivityIndicator color="#6200ee" />
+            ) : (
+              <Text style={styles.photoPlaceholderText}>📸 Adicionar Foto</Text>
+            )}
+          </TouchableOpacity>
+        )}
+      </View>
 
 
       {/* BOXES DE INFO EXTRA (LADO A LADO) */}
@@ -311,16 +409,24 @@ const styles = StyleSheet.create({
   gpsText: { color: '#666' },
   row: { flexDirection: 'row', alignItems: 'center' },
 
-  // Extras (Lado a Lado)
+  // --- ESTILOS FOTO (NOVO) ---
+  photoSection: { marginBottom: 20 },
+  photoPlaceholder: { height: 150, backgroundColor: '#f0f0f0', borderRadius: 10, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#ddd', borderStyle: 'dashed' },
+  photoPlaceholderText: { color: '#6200ee', fontWeight: 'bold', fontSize: 16 },
+
+  photoContainer: { position: 'relative' },
+  photoPreview: { height: 200, width: '100%', borderRadius: 10, backgroundColor: '#000' },
+
+  btnRemovePhoto: { position: 'absolute', top: 10, right: 10, backgroundColor: 'rgba(0,0,0,0.5)', width: 30, height: 30, borderRadius: 15, justifyContent: 'center', alignItems: 'center' },
+  btnRemovePhotoText: { color: '#fff', fontWeight: 'bold', fontSize: 16, marginTop: -2 },
+
+  // Extras
   extrasRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
   extraBox: { width: '48%', backgroundColor: '#eef2ff', padding: 12, borderRadius: 10, minHeight: 100, justifyContent: 'center', borderWidth: 1, borderColor: '#e0e7ff' },
-
   infoLabel: { fontSize: 11, fontWeight: 'bold', color: '#6200ee', marginBottom: 5, textTransform: 'uppercase' },
   infoValue: { fontSize: 13, color: '#444', marginBottom: 2 },
-
   weatherTemp: { fontSize: 22, fontWeight: 'bold', color: '#333', marginBottom: 2 },
   areaBadge: { fontSize: 10, color: '#fff', backgroundColor: '#6200ee', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, alignSelf: 'flex-start', marginTop: 5 },
-
   btnSmall: { backgroundColor: '#fff', padding: 10, borderRadius: 6, alignItems: 'center', borderWidth: 1, borderColor: '#c7c7c7', width: '100%' },
   btnSmallText: { color: '#6200ee', fontWeight: 'bold', fontSize: 12 },
 
@@ -328,8 +434,6 @@ const styles = StyleSheet.create({
   label: { fontSize: 16, fontWeight: '600', marginBottom: 6, color: '#444' },
   input: { borderWidth: 1, borderColor: '#ced4da', borderRadius: 8, padding: 12, marginBottom: 15, fontSize: 16, backgroundColor: '#fff' },
   textArea: { height: 100 },
-
-  // Botão Principal
   btn: { backgroundColor: '#6200ee', padding: 16, borderRadius: 8, alignItems: 'center', marginTop: 10, elevation: 2 },
   btnDisabled: { backgroundColor: '#adb5bd', elevation: 0 },
   btnText: { color: '#fff', fontWeight: 'bold', fontSize: 18 }

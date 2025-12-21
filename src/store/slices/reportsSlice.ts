@@ -45,8 +45,9 @@ export const addReport = createAsyncThunk('reports/addReport', async (newReport:
     address: newReport.address || "Morada não especificada",
     area: newReport.area || "",
 
-
     weather: newReport.weather || null,
+
+    photoBase64:newReport.photoBase64 || null,
 
     state: "EM RESOLUÇÃO"
   };
@@ -97,7 +98,7 @@ export const updateReport = createAsyncThunk('reports/updateReport', async (data
 
   if (!response.ok) throw new Error('Erro ao atualizar');
 
-  // A API devolve o objeto atualizado ou o ID. Vamos devolver os dados para atualizar o Redux.
+  // A API devolve o objeto atualizado ou o ID. Devolve os dados para atualizar o Redux.
   const updatedRecord = await response.json();
   return { id, updates: updatedRecord };
 });

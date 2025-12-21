@@ -18,6 +18,8 @@ export interface Report {
 
   weather?: WeatherData;
 
+  photoBase64?: string;
+
   timestamp: string;
   state: ReportStatus;
 }
