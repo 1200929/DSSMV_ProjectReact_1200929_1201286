@@ -288,6 +288,26 @@ export const AddReportScreen = ({ navigation }: any) => {
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
 
 
+      {/* INPUTS */}
+      <Text style={styles.label}>Título</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Ex: Buraco na estrada"
+        value={title}
+        onChangeText={setTitle}
+      />
+
+      <Text style={styles.label}>Descrição</Text>
+      <TextInput
+        style={[styles.input, styles.textArea]}
+        placeholder="Descreva a ocorrência..."
+        value={description}
+        onChangeText={setDescription}
+        multiline
+        textAlignVertical="top"
+      />
+
+
       {/* BOX GPS */}
       <TouchableOpacity style={styles.gpsContainer} onPress={getLocation}>
         {loadingLocation ? (
@@ -305,7 +325,7 @@ export const AddReportScreen = ({ navigation }: any) => {
         )}
       </TouchableOpacity>
 
-      {/* --- SECÇÃO DA FOTOGRAFIA (NOVO) --- */}
+      {/* SECÇÃO DA FOTOGRAFIA */}
       <Text style={styles.label}>Fotografia</Text>
       <View style={styles.photoSection}>
         {photoUri ? (
@@ -320,7 +340,7 @@ export const AddReportScreen = ({ navigation }: any) => {
             {loadingPhoto ? (
               <ActivityIndicator color="#6200ee" />
             ) : (
-              <Text style={styles.photoPlaceholderText}>📸 Adicionar Foto</Text>
+              <Text style={styles.photoPlaceholderText}>Adicionar Fotografia</Text>
             )}
           </TouchableOpacity>
         )}
@@ -342,7 +362,7 @@ export const AddReportScreen = ({ navigation }: any) => {
                 </View>
               ) : (
                 <TouchableOpacity onPress={fetchAddress} style={styles.btnSmall}>
-                  <Text style={styles.btnSmallText}>🏠 Obter Morada</Text>
+                  <Text style={styles.btnSmallText}>Obter Morada</Text>
                 </TouchableOpacity>
               )}
           </View>
@@ -366,24 +386,7 @@ export const AddReportScreen = ({ navigation }: any) => {
         </View>
       )}
 
-      {/* INPUTS */}
-      <Text style={styles.label}>Título</Text>
-      <TextInput
-        style={styles.input}
-        placeholder="Ex: Buraco na estrada"
-        value={title}
-        onChangeText={setTitle}
-      />
 
-      <Text style={styles.label}>Descrição</Text>
-      <TextInput
-        style={[styles.input, styles.textArea]}
-        placeholder="Descreva a ocorrência..."
-        value={description}
-        onChangeText={setDescription}
-        multiline
-        textAlignVertical="top"
-      />
 
       {/* BOTÃO GUARDAR */}
       <TouchableOpacity
