@@ -21,7 +21,7 @@ import Geolocation from 'react-native-geolocation-service';
 // CONSTANTES DAS APIS
 const API_KEY = '51ca6243f7msh9902b1a86759ef4p18db50jsn69065123cb41';
 
-export const AddReportScreen = () => {
+export const AddReportScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<any>();
 
   // ESTADOS DO FORMULÁRIO
@@ -32,7 +32,6 @@ export const AddReportScreen = () => {
   const [location, setLocation] = useState<{latitude: number; longitude: number} | null>(null);
 
   const [addressInfo, setAddressInfo] = useState<{ address: string; area: string } | null>(null);
-  // O Estado agora tipado corretamente com a interface WeatherData
   const [weatherInfo, setWeatherInfo] = useState<WeatherData | null>(null);
 
   // ESTADOS DE LOADING
@@ -62,7 +61,7 @@ export const AddReportScreen = () => {
 
   const getLocation = useCallback(async () => {
     setLoadingLocation(true);
-    // Resetar dados dependentes da localização quando o GPS muda
+    // Resetar dados dependentes da localização
     setAddressInfo(null);
     setWeatherInfo(null);
 
@@ -142,14 +141,10 @@ export const AddReportScreen = () => {
 
       const json = await response.json();
 
-      // Validação básica se os campos existem
       if (json.main && json.weather && json.weather.length > 0) {
-
-        // CONVERSÃO: Kelvin para Celsius
         const kelvin = json.main.temp;
         const celsius = (kelvin - 273.15).toFixed(1);
 
-        // Mapear para o Modelo WeatherData
         setWeatherInfo({
           temp: `${celsius}ºC`,
           description: json.weather[0].description,
@@ -182,31 +177,41 @@ export const AddReportScreen = () => {
       timestamp: new Date().toISOString(),
       latitude: location.latitude,
       longitude: location.longitude,
-
       address: addressInfo?.address,
       area: addressInfo?.area,
-
-
       weather: weatherInfo || undefined
     })).unwrap()
       .then(() => {
-        Alert.alert("Sucesso", "Ocorrência enviada!");
         // Limpar formulário
         setTitle('');
         setDescription('');
         setAddressInfo(null);
         setWeatherInfo(null);
-        getLocation(); // Atualizar GPS para novo report
         Keyboard.dismiss();
+
+
+        Alert.alert(
+          "Sucesso",
+          "Ocorrência enviada com sucesso!",
+          [
+            {
+              text: "OK",
+              onPress: () => {
+                getLocation();
+                navigation.goBack();
+              }
+            }
+          ]
+        );
       })
       .catch((err: any) => Alert.alert("Erro", "Falha ao enviar: " + err.message));
   };
 
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
-      <Text style={styles.headerTitle}>Nova Ocorrência</Text>
 
-      {/* --- BOX GPS --- */}
+
+      {/* BOX GPS */}
       <TouchableOpacity style={styles.gpsContainer} onPress={getLocation}>
         {loadingLocation ? (
           <View style={styles.row}>
@@ -224,7 +229,7 @@ export const AddReportScreen = () => {
       </TouchableOpacity>
 
 
-      {/* --- BOXES METEREOLOGIA E MORADA (LADO A LADO) --- */}
+      {/* BOXES DE INFO EXTRA (LADO A LADO) */}
       {location && !loadingLocation && (
         <View style={styles.extrasRow}>
 
@@ -239,7 +244,7 @@ export const AddReportScreen = () => {
                 </View>
               ) : (
                 <TouchableOpacity onPress={fetchAddress} style={styles.btnSmall}>
-                  <Text style={styles.btnSmallText}>Obter Morada</Text>
+                  <Text style={styles.btnSmallText}>🏠 Obter Morada</Text>
                 </TouchableOpacity>
               )}
           </View>
@@ -252,7 +257,7 @@ export const AddReportScreen = () => {
                   <Text style={styles.infoLabel}>Meteorologia:</Text>
                   <Text style={styles.weatherTemp}>{weatherInfo.temp}</Text>
                   <Text style={styles.infoValue} numberOfLines={1}>{weatherInfo.description}</Text>
-                  <Text style={styles.infoValue}>{weatherInfo.wind}</Text>
+                  <Text style={styles.infoValue}>💨 {weatherInfo.wind}</Text>
                 </View>
               ) : (
                 <TouchableOpacity onPress={fetchWeather} style={styles.btnSmall}>
@@ -298,7 +303,6 @@ export const AddReportScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: '#fff' },
-  headerTitle: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 20, color: '#333' },
 
   // GPS
   gpsContainer: { padding: 15, backgroundColor: '#f8f9fa', borderRadius: 10, alignItems: 'center', marginBottom: 15, borderWidth: 1, borderColor: '#e9ecef' },
@@ -307,7 +311,7 @@ const styles = StyleSheet.create({
   gpsText: { color: '#666' },
   row: { flexDirection: 'row', alignItems: 'center' },
 
-  // METEREOLOGIA E MORADA (Lado a Lado)
+  // Extras (Lado a Lado)
   extrasRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
   extraBox: { width: '48%', backgroundColor: '#eef2ff', padding: 12, borderRadius: 10, minHeight: 100, justifyContent: 'center', borderWidth: 1, borderColor: '#e0e7ff' },
 
