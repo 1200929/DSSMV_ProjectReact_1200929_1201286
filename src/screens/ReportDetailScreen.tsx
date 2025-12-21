@@ -1,0 +1,109 @@
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { Report } from '../models/Report';
+
+// Define o tipo das props de navegação (opcional mas bom para TypeScript)
+interface ReportDetailsProps {
+  route: { params: { report: Report } };
+  navigation: any;
+}
+
+export const ReportDetailsScreen = ({ route, navigation }: ReportDetailsProps) => {
+  // Recebemos o report enviado pelo ecrã anterior
+  const { report } = route.params;
+
+  // Formatar data
+  const formattedDate = new Date(report.timestamp).toLocaleString('pt-PT');
+
+  return (
+    <ScrollView style={styles.container}>
+
+      {/* CABEÇALHO */}
+      <View style={styles.header}>
+        <View style={[styles.badge, report.state === 'RESOLVIDO' ? styles.badgeGreen : styles.badgeRed]}>
+          <Text style={styles.badgeText}>{report.state}</Text>
+        </View>
+        <Text style={styles.date}>{formattedDate}</Text>
+      </View>
+
+      <Text style={styles.title}>{report.title}</Text>
+
+      <View style={styles.divider} />
+
+      {/* DESCRIÇÃO */}
+      <View style={styles.section}>
+        <Text style={styles.label}>DESCRIÇÃO</Text>
+        <Text style={styles.bodyText}>{report.description}</Text>
+      </View>
+
+      {/* LOCALIZAÇÃO */}
+      <View style={styles.section}>
+        <Text style={styles.label}>LOCALIZAÇÃO</Text>
+        <View style={styles.row}>
+          <Text style={styles.icon}></Text>
+          <View>
+            <Text style={styles.bodyText}>{report.address || "Sem morada"}</Text>
+            <Text style={styles.subText}>
+              {report.area ? `${report.area} • ` : ''}
+              {report.latitude.toFixed(5)}, {report.longitude.toFixed(5)}
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      {/* METEOROLOGIA (Se existir) */}
+      {report.weather && (
+        <View style={styles.section}>
+          <Text style={styles.label}>METEOROLOGIA NO LOCAL</Text>
+          <View style={styles.weatherBox}>
+            <Text style={styles.weatherTemp}>{report.weather.temp}</Text>
+            <View>
+              <Text style={styles.weatherDesc}>{report.weather.description}</Text>
+              <Text style={styles.subText}>Vento: {report.weather.wind}</Text>
+            </View>
+          </View>
+        </View>
+      )}
+
+      {/* BOTÃO VOLTAR (Opcional, pois o Android tem botão físico e o iOS tem a seta no topo) */}
+      <TouchableOpacity style={styles.btnBack} onPress={() => navigation.goBack()}>
+        <Text style={styles.btnBackText}>Voltar à Lista</Text>
+      </TouchableOpacity>
+
+      <View style={{height: 40}} />
+    </ScrollView>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#fff', padding: 20 },
+
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
+  date: { color: '#888', fontSize: 12 },
+
+  badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
+  badgeRed: { backgroundColor: '#ffebee' },
+  badgeGreen: { backgroundColor: '#e8f5e9' },
+  badgeText: { fontSize: 12, fontWeight: 'bold', color: '#333' },
+
+  title: { fontSize: 26, fontWeight: 'bold', color: '#222', marginBottom: 5 },
+  id: { fontSize: 10, color: '#aaa', marginBottom: 15 },
+
+  divider: { height: 1, backgroundColor: '#eee', marginVertical: 15 },
+
+  section: { marginBottom: 25 },
+  label: { fontSize: 12, color: '#6200ee', fontWeight: 'bold', marginBottom: 8, letterSpacing: 1 },
+  bodyText: { fontSize: 16, color: '#444', lineHeight: 24 },
+  subText: { fontSize: 13, color: '#888', marginTop: 2 },
+
+  row: { flexDirection: 'row', alignItems: 'flex-start' },
+  icon: { fontSize: 20, marginRight: 10, marginTop: -2 },
+
+  // Estilos Weather
+  weatherBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f8f9fa', padding: 15, borderRadius: 10, borderWidth: 1, borderColor: '#e9ecef' },
+  weatherTemp: { fontSize: 32, fontWeight: 'bold', color: '#333', marginRight: 15 },
+  weatherDesc: { fontSize: 16, color: '#333', textTransform: 'capitalize' },
+
+  btnBack: { marginTop: 20, padding: 15, alignItems: 'center', backgroundColor: '#f0f0f0', borderRadius: 8 },
+  btnBackText: { color: '#555', fontWeight: '600' }
+});

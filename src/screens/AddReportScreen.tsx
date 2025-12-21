@@ -215,7 +215,7 @@ export const AddReportScreen = () => {
           </View>
         ) : location ? (
           <View style={{alignItems: 'center'}}>
-            <Text style={styles.gpsLabel}>📍 Localização Atual</Text>
+            <Text style={styles.gpsLabel}>Localização Atual</Text>
             <Text style={styles.gpsCoords}>{location.latitude.toFixed(5)}, {location.longitude.toFixed(5)}</Text>
           </View>
         ) : (
