@@ -27,7 +27,7 @@ export const ReportDetailsScreen = ({ route }: ReportDetailsProps) => {
         <View
           style={[
             styles.badge,
-            report.state === 'RESOLVIDO' ? styles.badgeGreen : styles.badgeRed,
+            report.state === 'RESOLVED' ? styles.badgeGreen : styles.badgeRed,
           ]}
         >
           <Text style={styles.badgeText}>{report.state}</Text>
@@ -41,18 +41,18 @@ export const ReportDetailsScreen = ({ route }: ReportDetailsProps) => {
 
       {/* DESCRIÇÃO */}
       <View style={styles.section}>
-        <Text style={styles.label}>DESCRIÇÃO</Text>
+        <Text style={styles.label}>DESCRIPTION</Text>
         <Text style={styles.bodyText}>{report.description}</Text>
       </View>
 
       {/* LOCALIZAÇÃO */}
       <View style={styles.section}>
-        <Text style={styles.label}>LOCALIZAÇÃO</Text>
+        <Text style={styles.label}>LOCATION</Text>
         <View style={styles.row}>
           <Text style={styles.icon}></Text>
           <View>
             <Text style={styles.bodyText}>
-              {report.address || 'Sem morada'}
+              {report.address || 'No available address'}
             </Text>
             <Text style={styles.subText}>
               {report.area ? `${report.area} • ` : ''}
@@ -65,7 +65,7 @@ export const ReportDetailsScreen = ({ route }: ReportDetailsProps) => {
       {/* METEOROLOGIA (Se existir) */}
       {report.weather && (
         <View style={styles.section}>
-          <Text style={styles.label}>METEOROLOGIA NO LOCAL</Text>
+          <Text style={styles.label}>WEATHER ON LOCATION</Text>
           <View style={styles.weatherBox}>
             <Text style={styles.weatherTemp}>{report.weather.temp}</Text>
             <View>
@@ -81,7 +81,7 @@ export const ReportDetailsScreen = ({ route }: ReportDetailsProps) => {
       {/* FOTOGRAFIA */}
       {report.photoBase64 && (
         <View style={styles.section}>
-          <Text style={styles.label}>FOTOGRAFIA</Text>
+          <Text style={styles.label}>PHOTO</Text>
           <Image
             source={{ uri: report.photoBase64 }}
             style={styles.photo}

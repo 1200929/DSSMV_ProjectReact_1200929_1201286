@@ -17,11 +17,14 @@ import { addReport } from '../store/slices/reportsSlice';
 import Geolocation from 'react-native-geolocation-service';
 import * as ImagePicker from 'react-native-image-picker';
 
+// SERVIÇOS
+import { getWeatherByCoords } from '../services/weatherService';
+import { getAddressByCoords } from '../services/locationService';
+import { analyzeImage } from '../services/aiService';
+
 // COMPONENTES
 import { InfoWidget } from '../components/InfoWidget';
 import { PhotoWidget } from '../components/PhotoWidget';
-
-const API_KEY = '51ca6243f7msh9902b1a86759ef4p18db50jsn69065123cb41';
 
 export const AddReportScreen = ({ navigation }: any) => {
   const dispatch = useDispatch<any>();
@@ -44,13 +47,19 @@ export const AddReportScreen = ({ navigation }: any) => {
   // Estado para saber se estamos a submeter (IA + DB)
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // GPS
+  // --- GPS ---
   const requestLocationPermission = async () => {
     if (Platform.OS === 'android') {
       try {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-          { title: "GPS", message: "Nedded for the app.", buttonNeutral: "After", buttonNegative: "No", buttonPositive: "Yes" }
+          {
+            title: "GPS Permission",
+            message: "Needed for the app to locate the report.",
+            buttonNeutral: "Later",
+            buttonNegative: "No",
+            buttonPositive: "Yes"
+          }
         );
         return granted === PermissionsAndroid.RESULTS.GRANTED;
       } catch { return false; }
@@ -63,14 +72,14 @@ export const AddReportScreen = ({ navigation }: any) => {
     setAddressInfo(null);
     setWeatherInfo(null);
     const hasPermission = await requestLocationPermission();
-    if (!hasPermission) { Alert.alert("Error", "NO GPS"); setLoadingLocation(false); return; }
+    if (!hasPermission) { Alert.alert("Error", "No GPS Permission"); setLoadingLocation(false); return; }
 
     Geolocation.getCurrentPosition(
       (pos) => {
         setLocation({ latitude: pos.coords.latitude, longitude: pos.coords.longitude });
         setLoadingLocation(false);
       },
-      (err) => { Alert.alert("Error GPS", err.message); setLoadingLocation(false); },
+      (err) => { Alert.alert("GPS Error", err.message); setLoadingLocation(false); },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
     );
   }, []);
@@ -82,13 +91,13 @@ export const AddReportScreen = ({ navigation }: any) => {
     if (!location) return;
     setLoadingAddress(true);
     try {
-      const res = await fetch(`https://trueway-geocoding.p.rapidapi.com/ReverseGeocode?location=${location.latitude}%2C${location.longitude}&language=en`, {
-        headers: { 'x-rapidapi-key': API_KEY, 'x-rapidapi-host': 'trueway-geocoding.p.rapidapi.com' }
-      });
-      const json = await res.json();
-      if (json.results?.[0]) setAddressInfo({ address: json.results[0].address, area: json.results[0].area });
-    } catch { Alert.alert("Error", "Failed obtaining address."); }
-    finally { setLoadingAddress(false); }
+      const data = await getAddressByCoords(location.latitude, location.longitude);
+      setAddressInfo(data);
+    } catch {
+      Alert.alert("Error", "Failed to get address.");
+    } finally {
+      setLoadingAddress(false);
+    }
   };
 
   // METEO
@@ -96,89 +105,69 @@ export const AddReportScreen = ({ navigation }: any) => {
     if (!location) return;
     setLoadingWeather(true);
     try {
-      const res = await fetch(`https://open-weather13.p.rapidapi.com/latlon?latitude=${location.latitude}&longitude=${location.longitude}&lang=pt`, {
-        headers: { 'x-rapidapi-key': API_KEY, 'x-rapidapi-host': 'open-weather13.p.rapidapi.com' }
-      });
-      const json = await res.json();
-      if (json.main) {
-        setWeatherInfo({
-          temp: `${(json.main.temp - 273.15).toFixed(1)}ºC`,
-          description: json.weather[0].description,
-          wind: `${json.wind.speed} m/s`
-        });
-      }
-    } catch { Alert.alert("Error", "Failed obtaining weather."); }
-    finally { setLoadingWeather(false); }
+      const data = await getWeatherByCoords(location.latitude, location.longitude);
+      setWeatherInfo(data);
+    } catch {
+      Alert.alert("Error", "Failed to get weather.");
+    } finally {
+      setLoadingWeather(false);
+    }
   };
 
   // FOTO
-  const handleSelectPhoto = () => {
-    const opts: ImagePicker.CameraOptions = { mediaType: 'photo', quality: 0.6, maxWidth: 640, maxHeight: 480, includeBase64: true };
-    Alert.alert("Photo", "From:", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Camera", onPress: () => ImagePicker.launchCamera(opts, processImage) },
-      { text: "Gallery", onPress: () => ImagePicker.launchImageLibrary(opts, processImage) }
-    ]);
+  const pickerOptions: ImagePicker.CameraOptions = {
+    mediaType: 'photo',
+    quality: 0.6,
+    maxWidth: 640,
+    maxHeight: 480,
+    includeBase64: true,
   };
 
   const processImage = (res: ImagePicker.ImagePickerResponse) => {
     setLoadingPhoto(true);
-    if (res.assets?.[0]) {
-      setPhotoUri(res.assets[0].uri || null);
-      if (res.assets[0].base64) setPhotoData(`data:${res.assets[0].type};base64,${res.assets[0].base64}`);
+    if (res.assets && res.assets.length > 0) {
+      const asset = res.assets[0];
+      setPhotoUri(asset.uri || null);
+      if (asset.base64 && asset.type) {
+        setPhotoData(`data:${asset.type};base64,${asset.base64}`);
+      }
     }
     setLoadingPhoto(false);
   };
 
+  const handleSelectPhoto = () => {
+    Alert.alert("Add Photo", "Choose an option:", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Camera", onPress: () => ImagePicker.launchCamera(pickerOptions, processImage) },
+      { text: "Gallery", onPress: () => ImagePicker.launchImageLibrary(pickerOptions, processImage) }
+    ]);
+  };
 
-  // SUBMETER (IA + DB)
+  // SUBMETER
   const handleSave = async () => {
-    // Validações Básicas
-    if (!location) { Alert.alert("ALERT", "WAIT for GPS."); return; }
-    if (!photoData) { Alert.alert("ALERT", "Photo is MANDATORY."); return; }
+    if (!location) { Alert.alert("Warning", "Wait for GPS location."); return; }
+    if (!photoData) { Alert.alert("Warning", "Photo is required."); return; }
 
     setIsSubmitting(true);
 
     try {
       // A) CHAMADA À IA
-      let aiTitle = "Report";
-      let aiDescription = "Unavailable";
-      let aiCategory = "Geral";
+      let aiResult = {
+        title: "Incident Report",
+        description: "Analysis unavailable",
+        category: "General"
+      };
 
       try {
-        const cleanBase64 = photoData.replace(/^data:image\/[a-z]+;base64,/, "");
-        const aiRes = await fetch('https://image-tagging-and-classification.p.rapidapi.com/analyze', {
-          method: 'POST',
-          headers: {
-            'x-rapidapi-key': API_KEY,
-            'x-rapidapi-host': 'image-tagging-and-classification.p.rapidapi.com',
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            input_image: cleanBase64,
-            input_type: "base64",
-            max_description_length: 500,
-            min_keywords_count: 3,
-            max_keywords_count: 5,
-            custom_categories: {}
-          })
-        });
-        const aiJson = await aiRes.json();
-
-        if (aiJson.data) {
-          aiTitle = aiJson.data.title || "Report Detected";
-          const keywords = aiJson.data.keywords ? aiJson.data.keywords.join(", ") : "";
-          aiCategory = aiJson.data.category || "Geral";
-          aiDescription = `${aiJson.data.description}\n\n[IA Tags]: ${keywords}\n[Categoria]: ${aiCategory}`;
-        }
+        aiResult = await analyzeImage(photoData);
       } catch (aiError) {
-        console.log("AI failed", aiError);
+        console.log("AI failed, using defaults", aiError);
       }
 
       // B) ENVIAR PARA BASE DE DADOS (Redux)
       await dispatch(addReport({
-        title: aiTitle,
-        description: aiDescription,
+        title: aiResult.title,
+        description: aiResult.description,
         timestamp: new Date().toISOString(),
         latitude: location.latitude,
         longitude: location.longitude,
@@ -188,18 +177,18 @@ export const AddReportScreen = ({ navigation }: any) => {
         photoBase64: photoData
       })).unwrap();
 
-
+      // C) LIMPEZA
       setPhotoUri(null);
       setPhotoData(null);
       setAddressInfo(null);
       setWeatherInfo(null);
 
-      Alert.alert("Success", "Report recorded!", [
+      Alert.alert("Success", "Report registered!", [
         { text: "OK", onPress: () => { getLocation(); navigation.goBack(); } }
       ]);
 
     } catch (error: any) {
-      Alert.alert("Error", "Fail recording on DB: " + error.message);
+      Alert.alert("Error", error.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -213,7 +202,7 @@ export const AddReportScreen = ({ navigation }: any) => {
         {loadingLocation ? (
           <View style={{flexDirection:'row', alignItems:'center'}}>
             <ActivityIndicator size="small" color="#6200ee" style={{marginRight:10}}/>
-            <Text>Tracking...</Text>
+            <Text>Tracking location...</Text>
           </View>
         ) : location ? (
           <View style={{alignItems: 'center'}}>
@@ -221,7 +210,7 @@ export const AddReportScreen = ({ navigation }: any) => {
             <Text style={styles.gpsCoords}>{location.latitude.toFixed(5)}, {location.longitude.toFixed(5)}</Text>
           </View>
         ) : (
-          <Text>Touch to retrieve GPS coordinates </Text>
+          <Text>Touch to activate GPS</Text>
         )}
       </TouchableOpacity>
 
@@ -240,7 +229,7 @@ export const AddReportScreen = ({ navigation }: any) => {
             label="ADDRESS"
             value={addressInfo?.address || null}
             subValue={addressInfo?.area}
-            buttonText="Obtain Address"
+            buttonText="Get Address"
             isLoading={loadingAddress}
             onPress={fetchAddress}
           />
@@ -249,7 +238,7 @@ export const AddReportScreen = ({ navigation }: any) => {
             value={weatherInfo?.temp || null}
             subValue={weatherInfo?.description}
             extra={weatherInfo ? weatherInfo.wind : undefined}
-            buttonText="Obtain Weather"
+            buttonText="Get Weather"
             isLoading={loadingWeather}
             onPress={fetchWeather}
           />
@@ -267,10 +256,10 @@ export const AddReportScreen = ({ navigation }: any) => {
           {isSubmitting ? (
             <View style={{flexDirection: 'row', alignItems: 'center'}}>
               <ActivityIndicator color="#fff" style={{marginRight: 10}}/>
-              <Text style={styles.btnText}>A Analisar & Guardar...</Text>
+              <Text style={styles.btnText}>Analyzing & Saving...</Text>
             </View>
           ) : (
-            <Text style={styles.btnText}>Register Report</Text>
+            <Text style={styles.btnText}>Submit Report</Text>
           )}
         </TouchableOpacity>
       </View>

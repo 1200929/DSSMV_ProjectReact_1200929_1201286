@@ -1,7 +1,7 @@
 
 import { WeatherData } from './Weather';
 
-export type ReportStatus = 'RESOLVIDO' | 'EM RESOLUÇÃO';
+export type ReportStatus = 'RESOLVED' | 'UNDER RESOLUTION';
 
 export interface Report {
   _id?: string;

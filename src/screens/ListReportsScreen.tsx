@@ -33,7 +33,7 @@ export const ListReportsScreen = ({ navigation }: any) => {
 
   // ALTERAR ESTADO
   const handleToggleStatus = (item: any) => {
-    const newState = item.state === 'RESOLVIDO' ? 'EM RESOLUÇÃO' : 'RESOLVIDO';
+    const newState = item.state === 'RESOLVED' ? 'UNDER RESOLUTION' : 'RESOLVED';
     const idToUpdate = item._id || item.id;
 
     if (idToUpdate) {
@@ -44,17 +44,17 @@ export const ListReportsScreen = ({ navigation }: any) => {
   // APAGAR
   const handleDelete = (id?: string) => {
     if (!id) {
-      Alert.alert("Erro", "Item sem ID, não é possível apagar.");
+      Alert.alert("Error", "Delete report not available.");
       return;
     }
 
     Alert.alert(
-      "Confirmar",
-      "Tens a certeza que queres apagar?",
+      "Confirm",
+      "Sure you want to delete this report?",
       [
-        { text: "Cancelar", style: "cancel" },
+        { text: "Cancel", style: "cancel" },
         {
-          text: "Apagar",
+          text: "Delete",
           style: "destructive",
           onPress: () => dispatch(deleteReport(id))
         }
@@ -77,7 +77,7 @@ export const ListReportsScreen = ({ navigation }: any) => {
     return (
       <View style={[styles.container, styles.center]}>
         <ActivityIndicator size="large" color="#6200ee" />
-        <Text style={{marginTop: 10}}>A carregar ocorrências...</Text>
+        <Text style={{marginTop: 10}}>Loading reports...</Text>
       </View>
     );
   }
@@ -97,7 +97,7 @@ export const ListReportsScreen = ({ navigation }: any) => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#6200ee']} />
         }
         ListEmptyComponent={
-          <Text style={styles.emptyText}>Sem ocorrências registadas.</Text>
+          <Text style={styles.emptyText}>No reports available.</Text>
         }
         renderItem={renderItem}
         contentContainerStyle={{ paddingBottom: 20 }}
