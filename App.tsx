@@ -1,4 +1,4 @@
-import 'react-native-gesture-handler'; // Deve ser sempre a primeira linha
+import 'react-native-gesture-handler';
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import { Provider } from 'react-redux';
