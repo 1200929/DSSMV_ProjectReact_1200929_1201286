@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
   badgeRed: { backgroundColor: '#ffebee' },
   badgeGreen: { backgroundColor: '#e8f5e9' },
-  badgeText: { fontSize: 12, fontWeight: 'bold', color: '#333' },
+  badgeText: { fontSize: 12, fontWeight: 'bold', color: 'orange' },
 
   title: { fontSize: 26, fontWeight: 'bold', color: '#222', marginBottom: 5 },
   id: { fontSize: 10, color: '#aaa', marginBottom: 15 },
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   divider: { height: 1, backgroundColor: '#eee', marginVertical: 15 },
 
   section: { marginBottom: 25 },
-  label: { fontSize: 12, color: '#6200ee', fontWeight: 'bold', marginBottom: 8, letterSpacing: 1 },
+  label: { fontSize: 12, color: 'orange', fontWeight: 'bold', marginBottom: 8, letterSpacing: 1 },
   bodyText: { fontSize: 16, color: '#444', lineHeight: 24 },
   subText: { fontSize: 13, color: '#888', marginTop: 2 },
 

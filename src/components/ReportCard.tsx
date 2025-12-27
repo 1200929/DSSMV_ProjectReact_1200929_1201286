@@ -40,7 +40,7 @@ export const ReportCard = ({ report, onPress, onToggleStatus, onDelete }: Report
             onPress={() => onToggleStatus(report)}
           >
             <Text style={styles.btnAction}>
-              {report.state === 'RESOLVIDO' ? 'Reabrir' : 'Resolver'}
+              {report.state === 'RESOLVED' ? 'Reopen' : 'Solve'}
             </Text>
           </TouchableOpacity>
 
@@ -48,7 +48,7 @@ export const ReportCard = ({ report, onPress, onToggleStatus, onDelete }: Report
             style={styles.actionButton}
             onPress={() => onDelete(report._id || report.id || '')}
           >
-            <Text style={styles.btnDelete}>Apagar</Text>
+            <Text style={styles.btnDelete}>Delete</Text>
           </TouchableOpacity>
         </View>
       </View>

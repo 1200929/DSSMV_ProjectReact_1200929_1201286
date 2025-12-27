@@ -6,7 +6,7 @@ interface StatusBadgeProps {
 }
 
 export const StatusBadge = ({ status }: StatusBadgeProps) => {
-  const isResolved = status === 'RESOLVIDO';
+  const isResolved = status === 'RESOLVED';
 
   return (
     <View style={[styles.badge, isResolved ? styles.green : styles.red]}>

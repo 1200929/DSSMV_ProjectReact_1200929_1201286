@@ -34,16 +34,16 @@ export default function App() {
             name="ListReports"
             component={ListReportsScreen}
             options={({ navigation }) => ({
-              title: 'Urban Reports',
-              headerStyle: { backgroundColor: '#6200ee' },
-              headerTintColor: '#fff',
-              // Botão "+ Novo" no canto superior direito
+              title: 'RoadScout',
+              headerStyle: { backgroundColor: 'orange' },
+              headerTintColor: 'yellow',
+              // Botão "+ New" no canto superior direito
               headerRight: () => (
                 <TouchableOpacity
                   style={styles.headerBtn}
                   onPress={() => navigation.navigate('AddReport')}
                 >
-                  <Text style={styles.headerBtnText}>+ Novo</Text>
+                  <Text style={styles.headerBtnText}>+ New</Text>
                 </TouchableOpacity>
               )
             })}
@@ -54,9 +54,9 @@ export default function App() {
             name="AddReport"
             component={AddReportScreen}
             options={{
-              title: 'Nova Ocorrência',
-              headerStyle: { backgroundColor: '#6200ee' },
-              headerTintColor: '#fff',
+              title: 'New Report',
+              headerStyle: { backgroundColor: 'orange' },
+              headerTintColor: 'yellow',
             }}
           />
 
@@ -65,9 +65,9 @@ export default function App() {
             name="ReportDetails"
             component={ReportDetailsScreen}
             options={{
-              title: 'Detalhes',
-              headerStyle: { backgroundColor: '#fff' },
-              headerTintColor: '#6200ee',
+              title: 'Details',
+              headerStyle: { backgroundColor: 'orange' },
+              headerTintColor: 'yellow',
             }}
           />
 
@@ -80,13 +80,13 @@ export default function App() {
 const styles = StyleSheet.create({
   headerBtn: {
     marginRight: 15,
-    backgroundColor: '#fff',
+    backgroundColor: 'red',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6
   },
   headerBtnText: {
-    color: '#6200ee',
+    color: 'yellow',
     fontWeight: 'bold',
     fontSize: 14
   }
