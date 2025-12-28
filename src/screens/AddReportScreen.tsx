@@ -168,6 +168,7 @@ export const AddReportScreen = ({ navigation }: any) => {
       await dispatch(addReport({
         title: aiResult.title,
         description: aiResult.description,
+        category: aiResult.category,
         timestamp: new Date().toISOString(),
         latitude: location.latitude,
         longitude: location.longitude,

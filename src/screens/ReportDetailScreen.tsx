@@ -39,6 +39,12 @@ export const ReportDetailsScreen = ({ route }: ReportDetailsProps) => {
 
       <View style={styles.divider} />
 
+      {/* CATEGORIA */}
+      <View style={styles.section}>
+        <Text style={styles.label}>CATEGORY</Text>
+        <Text style={styles.bodyText}>{report.category}</Text>
+      </View>
+
       {/* DESCRIÇÃO */}
       <View style={styles.section}>
         <Text style={styles.label}>DESCRIPTION</Text>

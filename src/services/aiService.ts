@@ -34,13 +34,11 @@ export const analyzeImage = async (base64String: string): Promise<AIResult> => {
   const json = await response.json();
 
   if (json.data) {
-    const keywords = json.data.keywords ? json.data.keywords.join(", ") : "";
-    const category = json.data.category || "Geral";
 
     return {
       title: json.data.title || "Report detected",
-      description: `${json.data.description}\n\n[Tags]: ${keywords}\n[Category]: ${category}`,
-      category: category
+      description: json.data.description || "No description found.",
+      category: json.data.category
     };
   }
 

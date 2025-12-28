@@ -33,7 +33,7 @@ export const fetchReports = createAsyncThunk('reports/fetchReports', async () =>
     }
   });
 
-  if (!response.ok) throw new Error('Erro ao buscar dados');
+  if (!response.ok) throw new Error('Error getting data');
   return (await response.json()) as Report[];
 });
 
@@ -42,14 +42,16 @@ export const addReport = createAsyncThunk('reports/addReport', async (newReport:
 
   const reportData = {
     ...newReport,
-    address: newReport.address || "Morada não especificada",
+    address: newReport.address || "Address Unknown",
     area: newReport.area || "",
 
     weather: newReport.weather || null,
 
     photoBase64:newReport.photoBase64 || null,
 
-    state: "EM RESOLUÇÃO"
+    category: newReport.category || "General",
+
+    state: "UNDER RESOLUTION"
   };
 
   const response = await fetch(API_URL, {
@@ -62,7 +64,7 @@ export const addReport = createAsyncThunk('reports/addReport', async (newReport:
     body: JSON.stringify(reportData)
   });
 
-  if (!response.ok) throw new Error('Erro ao criar report');
+  if (!response.ok) throw new Error('Error creating report');
   return (await response.json()) as Report;
 });
 
@@ -77,7 +79,7 @@ export const deleteReport = createAsyncThunk('reports/deleteReport', async (repo
     }
   });
 
-  if (!response.ok) throw new Error('Erro ao apagar');
+  if (!response.ok) throw new Error('Error deleting');
   return reportId;
 });
 
@@ -96,7 +98,7 @@ export const updateReport = createAsyncThunk('reports/updateReport', async (data
     body: JSON.stringify(updates)
   });
 
-  if (!response.ok) throw new Error('Erro ao atualizar');
+  if (!response.ok) throw new Error('Error updating');
 
   // A API devolve o objeto atualizado ou o ID. Devolve os dados para atualizar o Redux.
   const updatedRecord = await response.json();
