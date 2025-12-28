@@ -141,14 +141,14 @@ export const ListReportsScreen = ({ navigation }: any) => {
         <TouchableOpacity style={styles.filterBtn} onPress={() => openFilterModal('AREA')}>
           <Text style={styles.filterLabel}>LOCATION</Text>
           <Text style={styles.filterValue} numberOfLines={1}>{filterArea}</Text>
-          <Text style={styles.filterIcon}>▼</Text>
+          <Text style={styles.filterIcon} />
         </TouchableOpacity>
 
         {/* Botão CATEGORY */}
         <TouchableOpacity style={styles.filterBtn} onPress={() => openFilterModal('CATEGORY')}>
           <Text style={styles.filterLabel}>CATEGORY</Text>
           <Text style={styles.filterValue} numberOfLines={1}>{filterCategory}</Text>
-          <Text style={styles.filterIcon}>▼</Text>
+          <Text style={styles.filterIcon} />
         </TouchableOpacity>
 
         {/* Botão DATE (Toggle) */}
@@ -246,8 +246,8 @@ const styles = StyleSheet.create({
   },
   dateBtn: {
     flex: 0.6,
-    backgroundColor: '#eef2ff',
-    borderColor: '#c7d2fe'
+    backgroundColor: '#f8f9fa',
+    borderColor: '#ddd'
   },
   filterLabel: {
     fontSize: 9,
@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   sortIcon: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#6200ee'
+    color: '#666'
   },
 
   // MODAL STYLES
