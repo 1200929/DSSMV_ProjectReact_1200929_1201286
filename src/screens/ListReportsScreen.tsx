@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState, useMemo } from 'react';
+import React, { useEffect, useCallback, useState, useMemo, useLayoutEffect } from 'react';
 import {
   View,
   Text,
@@ -30,6 +30,21 @@ export const ListReportsScreen = ({ navigation }: any) => {
   // ESTADOS DO Dropdown
   const [modalVisible, setModalVisible] = useState(false);
   const [activeFilterType, setActiveFilterType] = useState<'AREA' | 'CATEGORY' | null>(null);
+
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity
+          onPress={() => navigation.navigate('AddReport')}
+          style={{ padding: 5 }}
+        >
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#6200ee' }}>+ NEW</Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation]);
+
 
   // CARREGAR DADOS AO ABRIR O ECRÃ
   useEffect(() => {
@@ -212,15 +227,33 @@ export const ListReportsScreen = ({ navigation }: any) => {
         </TouchableWithoutFeedback>
       </Modal>
 
+      {/* BOTÃO FLUTUANTE "MAP" */}
+      <View style={styles.floatingContainer}>
+        <TouchableOpacity
+          style={styles.mapPill}
+          onPress={() => navigation.navigate('MapScreen')}
+          activeOpacity={0.8}
+        >
+          {/* eslint-disable-next-line react-native/no-inline-styles */}
+          <Text style={{ color: '#fff', fontWeight: 'bold', fontSize: 16 }}>Map</Text>
+        </TouchableOpacity>
+      </View>
+
     </View>
   );
 };
 
+// @ts-ignore
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
   center: { justifyContent: 'center', alignItems: 'center' },
   errorText: { color: 'red', textAlign: 'center', marginBottom: 10 },
-  emptyText: { textAlign: 'center', marginTop: 50, color: '#888', fontSize: 16 },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 50,
+    color: '#888',
+    fontSize: 16,
+  },
 
   // BARRA DE FILTROS
   filterBar: {
@@ -231,7 +264,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#e0e0e0',
     marginBottom: 5,
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   filterBtn: {
     flex: 1,
@@ -242,33 +275,33 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#ddd',
     alignItems: 'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
   },
   dateBtn: {
     flex: 0.6,
     backgroundColor: '#f8f9fa',
-    borderColor: '#ddd'
+    borderColor: '#ddd',
   },
   filterLabel: {
     fontSize: 9,
     color: '#888',
     fontWeight: 'bold',
-    marginBottom: 2
+    marginBottom: 2,
   },
   filterValue: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#333'
+    color: '#333',
   },
   filterIcon: {
     fontSize: 8,
     color: '#666',
-    marginTop: 2
+    marginTop: 2,
   },
   sortIcon: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#666'
+    color: '#666',
   },
 
   // MODAL STYLES
@@ -276,7 +309,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   },
   modalContent: {
     width: '80%',
@@ -284,28 +317,43 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 12,
     padding: 20,
-    elevation: 5
+    elevation: 5,
   },
   modalTitle: {
     fontSize: 18,
     fontWeight: 'bold',
     marginBottom: 15,
     textAlign: 'center',
-    color: '#333'
+    color: '#333',
   },
   modalItem: {
     paddingVertical: 15,
     borderBottomWidth: 1,
     borderBottomColor: '#f0f0f0',
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
   },
   modalItemText: {
     fontSize: 16,
-    color: '#555'
+    color: '#555',
   },
   modalItemActive: {
     color: '#6200ee',
-    fontWeight: 'bold'
-  }
+    fontWeight: 'bold',
+  },
+  floatingContainer: {
+    position: 'absolute',
+    bottom: 30,
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    zIndex: 999, // Garante que fica por cima da lista
+  },
+  mapPill: {
+    flexDirection: 'row',
+    backgroundColor: 'orange',
+    paddingVertical: 12,
+    paddingHorizontal: 22,
+    borderRadius: 30,
+  },
 });

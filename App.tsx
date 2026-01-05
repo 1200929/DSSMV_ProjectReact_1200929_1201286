@@ -12,13 +12,16 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { AddReportScreen } from './src/screens/AddReportScreen';
 import { ListReportsScreen } from './src/screens/ListReportsScreen';
 import { ReportDetailsScreen } from './src/screens/ReportDetailScreen';
+import { MapScreen } from './src/screens/MapScreen.tsx';
 import { Report } from './src/models/Report';
+
 
 // Definir quais ecrãs existem e que dados recebem
 export type RootStackParamList = {
   ListReports: undefined;
   AddReport: undefined;
   ReportDetails: { report: Report };
+  MapScreen: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -70,6 +73,16 @@ export default function App() {
               headerTintColor: 'yellow',
             }}
           />
+
+          {/* ECRÃ 4: MAPA */}
+          <Stack.Screen
+            name="MapScreen"
+            component={MapScreen}
+            options={{
+              title: 'MAP VIEW',
+              headerStyle: { backgroundColor: 'orange' },
+              headerTintColor: 'yellow',
+            }}/>
 
         </Stack.Navigator>
       </NavigationContainer>
