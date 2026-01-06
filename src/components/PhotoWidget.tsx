@@ -33,7 +33,7 @@ export const PhotoWidget = ({
           disabled={isLoadingPhoto}
         >
           {isLoadingPhoto ? (
-            <ActivityIndicator color="#6200ee" size="large" />
+            <ActivityIndicator color="#ff8c00" size="large" />
           ) : (
             <Text style={styles.placeholderText}>Add Photo</Text>
           )}
@@ -46,8 +46,8 @@ export const PhotoWidget = ({
 const styles = StyleSheet.create({
   container: { marginBottom: 20 },
   label: { fontSize: 16, fontWeight: '600', marginBottom: 6, color: '#444' },
-  placeholder: { height: 180, backgroundColor: '#f0f0f0', borderRadius: 10, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#ddd', borderStyle: 'dashed' },
-  placeholderText: { color: '#6200ee', fontWeight: 'bold', fontSize: 16 },
+  placeholder: { height: 180, backgroundColor: '#eef2ff', borderRadius: 10, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#ddd', borderStyle: 'dashed' },
+  placeholderText: { color: '#ff8c00', fontWeight: 'bold', fontSize: 16 },
   imageWrapper: { position: 'relative' },
   preview: { height: 220, width: '100%', borderRadius: 10, backgroundColor: '#000' },
   btnRemove: { position: 'absolute', top: 10, right: 10, backgroundColor: 'rgba(0,0,0,0.6)', width: 34, height: 34, borderRadius: 17, justifyContent: 'center', alignItems: 'center' },

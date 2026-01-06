@@ -17,7 +17,7 @@ export const InfoWidget = ({
   return (
     <View style={styles.box}>
       {isLoading ? (
-        <ActivityIndicator color="#6200ee" />
+        <ActivityIndicator color="#ff8c00" />
       ) : value ? (
         <View>
           <Text style={styles.label}>{label}</Text>
@@ -45,10 +45,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#e0e7ff'
   },
-  label: { fontSize: 10, fontWeight: 'bold', color: '#6200ee', marginBottom: 5, textTransform: 'uppercase' },
+  label: { fontSize: 10, fontWeight: 'bold', color: '#ff8c00', marginBottom: 5, textTransform: 'uppercase' },
   mainValue: { fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 2 },
   subText: { fontSize: 12, color: '#444', marginBottom: 2 },
   badge: { fontSize: 10, color: '#444', paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4, alignSelf: 'flex-start', marginTop: 5 },
   btnSmall: { backgroundColor: '#fff', padding: 10, borderRadius: 6, alignItems: 'center', borderWidth: 1, borderColor: '#c7c7c7', width: '100%' },
-  btnText: { color: '#6200ee', fontWeight: 'bold', fontSize: 12 },
+  btnText: { color: '#ff8c00', fontWeight: 'bold', fontSize: 12 },
 });

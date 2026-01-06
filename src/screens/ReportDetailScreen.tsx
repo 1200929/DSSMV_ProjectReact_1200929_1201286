@@ -27,9 +27,9 @@ export const ReportDetailsScreen = ({ route, navigation }: ReportDetailsProps) =
   const handleShare = useCallback(async () => {
     try {
       const message = `Reported Occurrence: ${report.title}\n` +
-        `Local: ${report.address || 'Sem morada'}\n` +
+        `Local: ${report.address || 'Without associated address'}\n` +
         `State: ${report.state === 'RESOLVED' ? 'RESOLVED' : 'UNDER RESOLUTION'}\n` +
-        `\nSent by UrbanScout App`;
+        `\nSent by RoadScout App`;
 
       const result = await Share.share({
         message: message,

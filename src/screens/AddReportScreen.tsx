@@ -47,7 +47,7 @@ export const AddReportScreen = ({ navigation }: any) => {
   // Estado para saber se estamos a submeter (IA + DB)
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // --- GPS ---
+  // GPS
   const requestLocationPermission = async () => {
     if (Platform.OS === 'android') {
       try {
@@ -151,7 +151,7 @@ export const AddReportScreen = ({ navigation }: any) => {
     setIsSubmitting(true);
 
     try {
-      // A) CHAMADA À IA
+      // CHAMADA À IA
       let aiResult = {
         title: "Incident Report",
         description: "Analysis unavailable",
@@ -164,7 +164,7 @@ export const AddReportScreen = ({ navigation }: any) => {
         console.log("AI failed, using defaults", aiError);
       }
 
-      // B) ENVIAR PARA BASE DE DADOS (Redux)
+      // ENVIAR PARA BASE DE DADOS (Redux)
       await dispatch(addReport({
         title: aiResult.title,
         description: aiResult.description,
@@ -178,7 +178,7 @@ export const AddReportScreen = ({ navigation }: any) => {
         photoBase64: photoData
       })).unwrap();
 
-      // C) LIMPEZA
+      // LIMPEZA
       setPhotoUri(null);
       setPhotoData(null);
       setAddressInfo(null);
@@ -202,7 +202,7 @@ export const AddReportScreen = ({ navigation }: any) => {
       <TouchableOpacity style={styles.gpsContainer} onPress={getLocation}>
         {loadingLocation ? (
           <View style={{flexDirection:'row', alignItems:'center'}}>
-            <ActivityIndicator size="small" color="#6200ee" style={{marginRight:10}}/>
+            <ActivityIndicator size="small" color="#ff8c00" style={{marginRight:10}}/>
             <Text>Tracking location...</Text>
           </View>
         ) : location ? (
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
 
   infoText: { fontSize: 12, color: '#666', textAlign: 'center', marginBottom: 10, fontStyle: 'italic' },
 
-  btn: { backgroundColor: '#6200ee', padding: 16, borderRadius: 8, alignItems: 'center', marginTop: 5, elevation: 3 },
+  btn: { backgroundColor: '#ff8c00', padding: 16, borderRadius: 8, alignItems: 'center', marginTop: 5, elevation: 3 },
   btnDisabled: { backgroundColor: '#adb5bd', elevation: 0 },
   btnText: { color: '#fff', fontWeight: 'bold', fontSize: 18 }
 });
