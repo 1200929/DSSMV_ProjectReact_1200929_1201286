@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useLayoutEffect, useCallback } from 'react';
 import {
   View,
   Text,
+  Share,
   StyleSheet,
   ScrollView,
   Image,
+  Alert,
+  TouchableOpacity,
 } from 'react-native';
 import { Report } from '../models/Report';
 
@@ -13,12 +16,51 @@ interface ReportDetailsProps {
   navigation: any;
 }
 
-export const ReportDetailsScreen = ({ route }: ReportDetailsProps) => {
-  // Recebemos o report enviado pelo ecrã anterior
+export const ReportDetailsScreen = ({ route, navigation }: ReportDetailsProps) => {
+  // Recebe o report enviado pelo ecrã anterior
   const { report } = route.params;
 
   // Formatar data
   const formattedDate = new Date(report.timestamp).toLocaleString('pt-PT');
+
+  // FUNÇÃO DE PARTILHA
+  const handleShare = useCallback(async () => {
+    try {
+      const message = `Reported Occurrence: ${report.title}\n` +
+        `Local: ${report.address || 'Sem morada'}\n` +
+        `State: ${report.state === 'RESOLVED' ? 'RESOLVED' : 'UNDER RESOLUTION'}\n` +
+        `\nSent by UrbanScout App`;
+
+      const result = await Share.share({
+        message: message,
+        title: `Report: ${report.title}`,
+      });
+
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          console.log('Shared by ' + result.activityType);
+        } else {
+          console.log('Shared with success!');
+        }
+      }
+    } catch (error: any) {
+      Alert.alert(error.message);
+    }
+  }, [report]);
+
+
+  // BOTÃO NO HEADER
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={handleShare} style={{ marginRight: 10 }}>
+          <Text style={{ fontSize: 20 , color: "#fff700" , backgroundColor: "#e3e2d3" ,
+            padding: 5 , borderRadius: 20}}>SHARE</Text>
+        </TouchableOpacity>
+      ),
+      title: 'Details',
+    });
+  }, [navigation, handleShare]);
 
   return (
     <ScrollView style={styles.container}>
@@ -34,6 +76,7 @@ export const ReportDetailsScreen = ({ route }: ReportDetailsProps) => {
         </View>
         <Text style={styles.date}>{formattedDate}</Text>
       </View>
+
 
       <Text style={styles.title}>{report.title}</Text>
 
@@ -110,30 +153,24 @@ const styles = StyleSheet.create({
   badge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
   badgeRed: { backgroundColor: '#ffebee' },
   badgeGreen: { backgroundColor: '#e8f5e9' },
-  badgeText: { fontSize: 12, fontWeight: 'bold', color: 'orange' },
+  badgeText: { fontSize: 12, fontWeight: 'bold', color: '#ff8c00' },
 
   title: { fontSize: 26, fontWeight: 'bold', color: '#222', marginBottom: 5 },
-  id: { fontSize: 10, color: '#aaa', marginBottom: 15 },
 
   divider: { height: 1, backgroundColor: '#eee', marginVertical: 15 },
 
   section: { marginBottom: 25 },
-  label: { fontSize: 12, color: 'orange', fontWeight: 'bold', marginBottom: 8, letterSpacing: 1 },
+  label: { fontSize: 12, color: '#ff8c00', fontWeight: 'bold', marginBottom: 8, letterSpacing: 1 },
   bodyText: { fontSize: 16, color: '#444', lineHeight: 24 },
   subText: { fontSize: 13, color: '#888', marginTop: 2 },
 
   row: { flexDirection: 'row', alignItems: 'flex-start' },
   icon: { fontSize: 20, marginRight: 10, marginTop: -2 },
 
-  // Estilos Weather
   weatherBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f8f9fa', padding: 15, borderRadius: 10, borderWidth: 1, borderColor: '#e9ecef' },
   weatherTemp: { fontSize: 32, fontWeight: 'bold', color: '#333', marginRight: 15 },
   weatherDesc: { fontSize: 16, color: '#333', textTransform: 'capitalize' },
 
-  btnBack: { marginTop: 20, padding: 15, alignItems: 'center', backgroundColor: '#f0f0f0', borderRadius: 8 },
-  btnBackText: { color: '#555', fontWeight: '600' },
-
-  // ESTILO DA FOTO
   photo: {
     width: '100%',
     height: 250,

@@ -39,7 +39,8 @@ export const ListReportsScreen = ({ navigation }: any) => {
           onPress={() => navigation.navigate('AddReport')}
           style={{ padding: 5 }}
         >
-          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#6200ee' }}>+ NEW</Text>
+          <Text style={{ fontSize: 16, fontWeight: 'bold', color: '#fff700', backgroundColor: '#e3e2d3',
+          padding: 5, borderRadius: 10}}>+ NEW</Text>
         </TouchableOpacity>
       ),
     });
@@ -247,7 +248,7 @@ export const ListReportsScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f5f5f5' },
   center: { justifyContent: 'center', alignItems: 'center' },
-  errorText: { color: 'red', textAlign: 'center', marginBottom: 10 },
+  errorText: { color: '#ff0008', textAlign: 'center', marginBottom: 10 },
   emptyText: {
     textAlign: 'center',
     marginTop: 50,
@@ -351,7 +352,7 @@ const styles = StyleSheet.create({
   },
   mapPill: {
     flexDirection: 'row',
-    backgroundColor: 'orange',
+    backgroundColor: '#ff8c00',
     paddingVertical: 12,
     paddingHorizontal: 22,
     borderRadius: 30,

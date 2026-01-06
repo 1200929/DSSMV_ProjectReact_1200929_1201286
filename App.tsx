@@ -38,8 +38,8 @@ export default function App() {
             component={ListReportsScreen}
             options={({ navigation }) => ({
               title: 'RoadScout',
-              headerStyle: { backgroundColor: 'orange' },
-              headerTintColor: 'yellow',
+              headerStyle: { backgroundColor: '#ff8c00' },
+              headerTintColor: '#fff700',
               // Botão "+ New" no canto superior direito
               headerRight: () => (
                 <TouchableOpacity
@@ -58,8 +58,8 @@ export default function App() {
             component={AddReportScreen}
             options={{
               title: 'New Report',
-              headerStyle: { backgroundColor: 'orange' },
-              headerTintColor: 'yellow',
+              headerStyle: { backgroundColor: '#ff8c00' },
+              headerTintColor: '#fff700',
             }}
           />
 
@@ -69,8 +69,8 @@ export default function App() {
             component={ReportDetailsScreen}
             options={{
               title: 'Details',
-              headerStyle: { backgroundColor: 'orange' },
-              headerTintColor: 'yellow',
+              headerStyle: { backgroundColor: '#ff8c00' },
+              headerTintColor: '#fff700',
             }}
           />
 
@@ -80,8 +80,8 @@ export default function App() {
             component={MapScreen}
             options={{
               title: 'MAP VIEW',
-              headerStyle: { backgroundColor: 'orange' },
-              headerTintColor: 'yellow',
+              headerStyle: { backgroundColor: '#ff8c00' },
+              headerTintColor: '#fff700',
             }}/>
 
         </Stack.Navigator>
@@ -93,13 +93,13 @@ export default function App() {
 const styles = StyleSheet.create({
   headerBtn: {
     marginRight: 15,
-    backgroundColor: 'red',
+    backgroundColor: '#ff0008',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 6
   },
   headerBtnText: {
-    color: 'yellow',
+    color: '#fff700',
     fontWeight: 'bold',
     fontSize: 14
   }

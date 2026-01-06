@@ -34,13 +34,13 @@ export const MapScreen = ({ navigation }: any) => {
               latitude: report.latitude,
               longitude: report.longitude,
             }}
-            pinColor={report.state === 'RESOLVED' ? 'green' : 'red'}
+            pinColor={report.state === 'RESOLVED' ? '#22ff00' : '#ff0008'}
           >
             <Callout onPress={() => navigation.navigate('ReportDetails', { report })}>
               <View style={styles.callout}>
                 <Text style={styles.title}>{report.title}</Text>
                 <Text style={styles.status}>{report.state}</Text>
-                <Text style={styles.link}>Ver Detalhes</Text>
+                <Text style={styles.link}>See details</Text>
               </View>
             </Callout>
           </Marker>
