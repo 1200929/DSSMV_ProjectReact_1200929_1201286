@@ -66,6 +66,6 @@ const styles = StyleSheet.create({
   date: { fontSize: 10, color: '#999', marginTop: 10, textAlign: 'right' },
   actionsRow: { flexDirection: 'row', justifyContent: 'flex-end', marginTop: 10, borderTopWidth: 1, borderTopColor: '#eee', paddingTop: 10 },
   actionButton: { marginLeft: 20, padding: 5 },
-  btnAction: { color: '#6200ee', fontWeight: 'bold' },
+  btnAction: { color: '#ff8c00', fontWeight: 'bold' },
   btnDelete: { color: '#d32f2f', fontWeight: 'bold' }
 });
