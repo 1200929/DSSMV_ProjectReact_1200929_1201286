@@ -219,7 +219,7 @@ export const ListReportsScreen = ({ navigation }: any) => {
                     ]}>
                       {item}
                     </Text>
-                    {(activeFilterType === 'AREA' ? filterArea : filterCategory) === item && <Text>✓</Text>}
+
                   </TouchableOpacity>
                 )}
               />
@@ -292,7 +292,7 @@ const styles = StyleSheet.create({
   filterValue: {
     fontSize: 12,
     fontWeight: '600',
-    color: '#333',
+    color: '#ff8c00',
   },
   filterIcon: {
     fontSize: 8,
@@ -302,7 +302,7 @@ const styles = StyleSheet.create({
   sortIcon: {
     fontSize: 12,
     fontWeight: 'bold',
-    color: '#666',
+    color: '#ff8c00',
   },
 
   // MODAL STYLES
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     color: '#555',
   },
   modalItemActive: {
-    color: '#6200ee',
+    color: '#ff8c00',
     fontWeight: 'bold',
   },
   floatingContainer: {
