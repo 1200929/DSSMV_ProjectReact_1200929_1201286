@@ -141,7 +141,7 @@ export const ListReportsScreen = ({ navigation }: any) => {
   if (status === 'loading' && items.length === 0) {
     return (
       <View style={[styles.container, styles.center]}>
-        <ActivityIndicator size="large" color="#6200ee" />
+        <ActivityIndicator size="large" color="#ff8c00" />
         <Text style={{marginTop: 10}}>Loading reports...</Text>
       </View>
     );
@@ -181,7 +181,7 @@ export const ListReportsScreen = ({ navigation }: any) => {
       <FlatList
         data={processedItems}
         keyExtractor={(item, index) => item._id || item.id || index.toString()}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#6200ee']} />}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#ff8c00']} />}
         ListEmptyComponent={
           <Text style={styles.emptyText}>
             No reports found.{filterArea !== 'All' ? '\nTry clearing filters.' : ''}
